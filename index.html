@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Churn Prediction Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        #churnPredictionForm {
+            max-width: 400px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div>
+    <form id="churnPredictionForm">
+        <label>Customer Age: <input type="number" id="age" required></label>
+        <label>Gender: 
+            <select id="gender">
+                <option value="0">Male</option>
+                <option value="1">Female</option>
+            </select>
+        </label>
+        <label>Product Category:
+            <select id="productCategory">
+                <option value="0">Electronics</option>
+                <option value="1">Home</option>
+                <option value="2">Clothing</option>
+                <option value="3">Books</option>
+            </select>
+        </label>
+        <label>Total Purchase Amount: <input type="number" id="totalAmount" required></label>
+        <label>Payment Method: 
+            <select id="paymentMethod">
+                <option value="0">Credit Card</option>
+                <option value="1">PayPal</option>
+                <option value="2">Crypto</option>
+                <option value="3">Cash</option>
+            </select>
+        </label>
+        <label>Returns: 
+            <select id="returns">
+                <option value="1.0">Yes (Returned)</option>
+                <option value="0.0">No (Not Returned)</option>
+                <option value="0.497667009309526">Partially Returned (0.497)</option>
+            </select>
+        </label>
+        <button type="button" onclick="submitForm()">Predict Churn</button>
+    </form>
+    
+    <!-- Div to show the result -->
+    <div id="result"></div>
+</div>
+
+<script>
+    async function submitForm() {
+        const userInput = {
+            age: document.getElementById("age").value,
+            gender: document.getElementById("gender").value,
+            productCategory: document.getElementById("productCategory").value,
+            totalAmount: document.getElementById("totalAmount").value,
+            paymentMethod: document.getElementById("paymentMethod").value,
+            returns: document.getElementById("returns").value
+        };
+
+        const response = await fetch('http://localhost:5000/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ features: Object.values(userInput) })
+        });
+
+        const result = await response.json();
+        
+        // Display the result at the bottom of the form
+        document.getElementById("result").innerText = "Churn Prediction: " + (result.prediction ? "Likely to Churn" : "Unlikely to Churn");
+    }
+</script>
+
+</body>
+</html>
